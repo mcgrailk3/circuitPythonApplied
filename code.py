@@ -34,12 +34,12 @@ print("ESP32 SPI webclient test")
 
 TEXT_URL = "http://wifitest.adafruit.com/testwifi/index.html"
 JSON_POST_URL = "https://webhooks.datazar.com/webd77c9b-d6b9-4047-98ac-8701ab1dcd73"
-JSON_POST_URL2 = "https://udsensors.tk/ws/api/FeatherV2/"
+JSON_POST_URL2 = "https://udsensors.tk/ws/api/Feather/"
 
 # If you are using a board with pre-defined ESP32 Pins:
-esp32_cs = DigitalInOut(board.ESP_CS)
-esp32_ready = DigitalInOut(board.ESP_BUSY)
-esp32_reset = DigitalInOut(board.ESP_RESET)
+esp32_cs = DigitalInOut(board.D13)
+esp32_ready = DigitalInOut(board.D11)
+esp32_reset = DigitalInOut(board.D12)
 
 spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
 esp = adafruit_esp32spi.ESP_SPIcontrol(spi, esp32_cs, esp32_ready, esp32_reset)
@@ -101,10 +101,6 @@ while True:
                           "longitude": -83.9972517,
                           "time": unixtime
                     },
-                    "meta": {
-                          "latitude": 39.7771266,
-                          "longitude": -83.9972517
-                    },
                     "data": [
                         {
                          "sensor_id": 1,
@@ -122,7 +118,7 @@ while True:
             }
             print('Sending to...')
             print(data)
-            io.send_data(JSON_POST_URL, data)
+            #io.send_data(JSON_POST_URL, data)
             io2.send_data(JSON_POST_URL2, data)
             print('Data sent!')
         except (ValueError, RuntimeError) as e:

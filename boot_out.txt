@@ -1,1 +1,1 @@
-Adafruit CircuitPython 4.1.0 on 2019-08-02; Adafruit Metro M4 Airlift Lite with samd51j19
+Adafruit CircuitPython 5.0.0 on 2020-03-02; Adafruit Feather M4 Express with samd51j19

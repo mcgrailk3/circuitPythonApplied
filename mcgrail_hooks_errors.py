@@ -42,6 +42,7 @@ class AdafruitIO_RequestError(Exception):
 
     def __init__(self, response):
         response_content = response.json()
+        print(response.json())
         error = response_content["error"]
         super(AdafruitIO_RequestError, self).__init__(
             "Adafruit IO Error {0}: {1}".format(response.status_code, error)

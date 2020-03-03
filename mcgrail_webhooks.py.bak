@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 #
-# Copyright (c) 2019 Brent Rubell for Adafruit Industries
+# Copyright (c) 2019 Kevin McGrail
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,16 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`adafruit_io`
+`mcgrail_mcgrail_webhooks`
 ================================================================================
-A CircuitPython library for communicating with Adafruit IO.
-* Author(s): Brent Rubell for Adafruit Industries
+
+CircuitPython helper library for webhooks hooks
+
+
+* Author(s): Kevin McGrail
+
 Implementation Notes
 --------------------
+
+**Hardware:**
+
+.. todo:: Add links to any specific hardware product page(s), or category page(s). Use unordered list & hyperlink rST
+   inline format: "* `Link Text <url>`_"
+
 **Software and Dependencies:**
+
 * Adafruit CircuitPython firmware for the supported boards:
-    https://github.com/adafruit/circuitpython/releases
+  https://github.com/adafruit/circuitpython/releases
+
+.. todo:: Uncomment or remove the Bus Device and/or the Register library dependencies based on the library's use of either.
+
+# * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
+# * Adafruit's Register library: https://github.com/adafruit/Adafruit_CircuitPython_Register
 """
+
+# imports
+
 import time
 import json
 from mcgrail_hooks_errors import (
@@ -38,40 +57,35 @@ from mcgrail_hooks_errors import (
 )
 
 __version__ = "0.0.0-auto.0"
-__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_Adafruit_IO.git"
 
 CLIENT_HEADERS = {"User-Agent": "AIO-CircuitPython/{0}".format(__version__)}
-
 
 class IO_HTTP:
     """
     Client for interacting with the Adafruit IO HTTP API.
     https://io.adafruit.com/api/docs/#adafruit-io-http-api
-        :param str adafruit_io_username: Adafruit IO Username
-        :param str http_key: Key
+        :param str url
         :param wifi_manager: WiFiManager object from ESPSPI_WiFiManager or ESPAT_WiFiManager
     """
 
-    def __init__(self, url, http_key, wifi_manager):
+    def __init__(self, url, wifi_manager):
         self.url = url
-        self.key = http_key
         wifi_type = str(type(wifi_manager))
         if "ESPSPI_WiFiManager" in wifi_type or "ESPAT_WiFiManager" in wifi_type:
             self.wifi = wifi_manager
         else:
             raise TypeError("This library requires a WiFiManager object.")
         self._aio_headers = [
-            #{"Authorization": self.key, "Content-Type": "application/json"},
-            {self.key},
+            {"Content-Type": "application/json"},
         ]
 
     @staticmethod
     def _create_headers(io_headers):
         """Creates http request headers.
         """
-        #headers = CLIENT_HEADERS.copy()
-        #headers.update(io_headers)
-        return io_headers
+        headers = CLIENT_HEADERS.copy()
+        headers.update(io_headers)
+        return headers
 
     @staticmethod
     def _create_data(data, metadata):
@@ -85,7 +99,7 @@ class IO_HTTP:
                 "ele": metadata["ele"],
                 "created_at": metadata["created_at"],
             }
-        return {"value": data}
+        return data
 
     @staticmethod
     def _handle_error(response):
@@ -103,6 +117,7 @@ class IO_HTTP:
         """Composes a valid API request path.
         :param str path: Adafruit IO API URL path.
         """
+        print(path)
         return path
 
     # HTTP Requests
@@ -112,13 +127,10 @@ class IO_HTTP:
         :param str path: Formatted Adafruit IO URL from _compose_path
         :param json payload: JSON data to send to Adafruit IO
         """
-        #print(path)
-        #print(self._create_headers(self._aio_headers[0]))
         response = self.wifi.post(
             path, json=payload, headers=self._create_headers(self._aio_headers[0])
         )
         self._handle_error(response)
-        print(response.json())
         return response.json()
 
     def _get(self, path):
@@ -159,7 +171,6 @@ class IO_HTTP:
             except NotImplementedError:  # received a non-float value
                 raise NotImplementedError("Precision requires a floating point value")
         payload = self._create_data(data, metadata)
-        print(payload)
         self._post(path, payload)
 
     def receive_data(self, feed_key):
